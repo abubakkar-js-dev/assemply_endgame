@@ -1,9 +1,14 @@
 import { useState } from "react";
-import { clsx } from "clsx";
 import { languages } from "./languages";
-import { getFarewellText, getRandomWord } from "./utils";
+import { getRandomWord } from "./utils";
 import ConfettiContainer from "./components/ConfettiContainer";
 import Header from "./components/Header";
+import GameStatus from "./components/GameStatus";
+import LanguageChips from "./components/LanguageChips";
+import WordLetters from "./components/WordLetters";
+import AriaLiveStatus from "./components/ArialLiveStatus";
+import Keyboard from "./components/Keyboard";
+import NewGameButton from "./components/NewGameButton";
 // import Confetti from "react-confetti";
 
 /**
@@ -22,9 +27,10 @@ import Header from "./components/Header";
 
 export default function AssemblyEndgame() {
   // State values
-  const [currentWord, setCurrentWord] = useState<string>((): string => getRandomWord());
+  const [currentWord, setCurrentWord] = useState<string>((): string =>
+    getRandomWord()
+  );
   const [guessedLetters, setGuessedLetters] = useState<string[]>([]);
-
 
   // Derived value
   const numGuessesLeft: number = languages.length - 1;
@@ -54,102 +60,48 @@ export default function AssemblyEndgame() {
     setGuessedLetters([]);
   }
 
-  const languageElements = languages.map((lang, index) => {
-    const isLanguageLost = index < wrongGuessCount;
-    const styles = {
-      backgroundColor: lang.backgroundColor,
-      color: lang.color,
-    };
-    const className = clsx("chip", isLanguageLost && "lost");
-    return (
-      <span className={className} style={styles} key={lang.name}>
-        {lang.name}
-      </span>
-    );
-  });
-
-  const letterElements = currentWord.split("").map((letter, index) => {
-    const shouldRevealLetter = isGameLost || guessedLetters.includes(letter);
-    const letterClassName = clsx(
-      isGameLost && !guessedLetters.includes(letter) && "missed-letter"
-    );
-    return (
-      <span key={index} className={letterClassName}>
-        {shouldRevealLetter ? letter.toUpperCase() : ""}
-      </span>
-    );
-  });
-
-  const keyboardElements = alphabet.split("").map((letter) => {
-    const isGuessed = guessedLetters.includes(letter);
-    const isCorrect = isGuessed && currentWord.includes(letter);
-    const isWrong = isGuessed && !currentWord.includes(letter);
-    const className = clsx({
-      correct: isCorrect,
-      wrong: isWrong,
-    });
-
-    return (
-      <button
-        className={className}
-        key={letter}
-        disabled={isGameOver}
-        aria-disabled={guessedLetters.includes(letter)}
-        aria-label={`Letter ${letter}`}
-        onClick={() => addGuessedLetter(letter)}
-      >
-        {letter.toUpperCase()}
-      </button>
-    );
-  });
-
-  const gameStatusClass = clsx("game-status", {
-    won: isGameWon,
-    lost: isGameLost,
-    farewell: !isGameOver && isLastGuessIncorrect,
-  });
-
   
+
+
+
 
   return (
     <main>
       <ConfettiContainer isGameWon={isGameWon} />
       <Header />
 
-      <section aria-live="polite" role="status" className={gameStatusClass}>
-        {renderGameStatus()}
-      </section>
+      <GameStatus
+        isGameOver={isGameOver}
+        isLastGuessIncorrect={isLastGuessIncorrect}
+        isGameWon={isGameWon}
+        isGameLost={isGameLost}
+        wrongGuessCount={wrongGuessCount}
+      />
 
-      <section className="language-chips">{languageElements}</section>
+      <LanguageChips languages={languages} wrongGuessCount={wrongGuessCount} />
 
-      <section className="word">{letterElements}</section>
+      <WordLetters
+        currentWord={currentWord}
+        guessedLetters={guessedLetters}
+        isGameLost={isGameLost}
+      />
 
-      {/* Combined visually-hidden aria-live region for status updates */}
-      <section className="sr-only" aria-live="polite" role="status">
-        <p>
-          {currentWord.includes(lastGuessedLetter)
-            ? `Correct! The letter ${lastGuessedLetter} is in the word.`
-            : `Sorry, the letter ${lastGuessedLetter} is not in the word.`}
-          You have {numGuessesLeft} attempts left.
-        </p>
-        <p>
-          Current word:{" "}
-          {currentWord
-            .split("")
-            .map((letter) =>
-              guessedLetters.includes(letter) ? letter + "." : "blank."
-            )
-            .join(" ")}
-        </p>
-      </section>
+      <AriaLiveStatus
+        currentWord={currentWord}
+        lastGuessedLetter={lastGuessedLetter}
+        guessedLetters={guessedLetters}
+        numGuessesLeft={numGuessesLeft}
+      />
 
-      <section className="keyboard">{keyboardElements}</section>
+      <Keyboard
+        alphabet={alphabet}
+        guessedLetters={guessedLetters}
+        currentWord={currentWord}
+        isGameOver={isGameOver}
+        addGuessedLetter={addGuessedLetter}
+      />
 
-      {isGameOver && (
-        <button className="new-game" onClick={startNewGame}>
-          New Game
-        </button>
-      )}
+      <NewGameButton isGameOver={isGameOver} startNewGame={startNewGame} />
     </main>
   );
 }
