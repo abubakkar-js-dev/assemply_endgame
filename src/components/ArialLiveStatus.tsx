@@ -30,7 +30,7 @@ const AriaLiveStatus = ({
         Current word:{" "}
         {currentWord
           .split("")
-          .map((letter: string) =>
+          .map((letter: string): string =>
             guessedLetters.includes(letter) ? letter + "." : "blank."
           )
           .join(" ")}
