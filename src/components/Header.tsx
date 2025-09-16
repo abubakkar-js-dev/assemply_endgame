@@ -1,6 +1,7 @@
+import type { JSX } from "react"
 
 
-const Header = () => {
+const Header = (): JSX.Element => {
   return (
       <header>
         <h1>Assembly: Endgame</h1>
@@ -12,4 +13,4 @@ const Header = () => {
   )
 }
 
-export default Header
+export default Header;

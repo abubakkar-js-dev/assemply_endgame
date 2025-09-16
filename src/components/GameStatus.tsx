@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { getFarewellText } from "../utils";
 import { languages } from "../languages";
+import type {JSX} from "react";
 
 const GameStatus = ({
   isGameOver,
@@ -8,7 +9,15 @@ const GameStatus = ({
   isGameWon,
   isGameLost,
   wrongGuessCount,
-}) => {
+}:
+{
+  isGameOver: boolean,
+  isLastGuessIncorrect: boolean,
+  isGameWon: boolean,
+  isGameLost: boolean,
+  wrongGuessCount: number,
+}
+): JSX.Element => {
   const gameStatusClass = clsx("game-status", {
     won: isGameWon,
     lost: isGameLost,
