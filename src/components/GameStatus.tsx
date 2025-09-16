@@ -5,7 +5,7 @@ import type { JSX } from "react";
 
 type GameStatusProps = {
   isGameOver: boolean;
-  isLastGuessIncorrect: boolean;
+  isLastGuessIncorrect: boolean | string;
   isGameWon: boolean;
   isGameLost: boolean;
   wrongGuessCount: number;
